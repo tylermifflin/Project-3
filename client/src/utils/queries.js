@@ -42,6 +42,7 @@ export const QUERY_EXERCISES = gql`
       type
       muscle
       difficulty
+      instructions
     }
   }
 `;

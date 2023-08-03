@@ -24,6 +24,29 @@ const resolvers = {
       }
       throw new AuthenticationError('You need to be logged in!');
     },
+    exercises: async () => {
+      try {
+        const options = {
+          method: 'GET',
+          url: 'https://exercises-by-api-ninjas.p.rapidapi.com/v1/exercises',
+          // params: {
+          //   name: 'dumbbell bench press',
+          //   type: 'strength',
+          //   muscle: 'chest',
+          //   difficulty: 'beginner'
+          // },
+          headers: {
+            'X-RapidAPI-Key': '28b5db87b4mshbf9a82e25a27861p1ce71cjsn88ff5c0f5ba5',
+            'X-RapidAPI-Host': 'exercises-by-api-ninjas.p.rapidapi.com'
+          }
+        };
+
+        const response = await axios.request(options);
+        return response.data;
+      } catch (error) {
+        throw new Error('Failed to fetch exercises from API');
+      }
+    },
   },
 
   Mutation: {
@@ -80,37 +103,38 @@ const resolvers = {
       }
       throw new AuthenticationError('You need to be logged in!');
     },
-    addExercise: async (parent, { name, type, muscle, difficulty }) => {
-      // Create the exercise in your local MongoDB
-      const exercise = await Exercise.create({ name, type, muscle, difficulty });
-
-      // If you want, you can also make the API call here and save the data directly to your MongoDB
-      // Example:
-      const options = {
-        method: 'GET',
-        url: 'https://exercises-by-api-ninjas.p.rapidapi.com/v1/exercises',
-        params: {
+    addExercise: async (parent, { name, type, muscle, difficulty }, context) => {
+      if (context.user) {
+        const exercise = await Exercise.create({
           name,
           type,
           muscle,
           difficulty,
-        },
-        headers: {
-          'X-RapidAPI-Key': '28b5db87b4mshbf9a82e25a27861p1ce71cjsn88ff5c0f5ba5',
-          'X-RapidAPI-Host': 'exercises-by-api-ninjas.p.rapidapi.com',
-        },
-      };
+        });
 
-      try {
-        const response = await axios.request(options);
-        const exerciseDataFromAPI = response.data;
-        // Save exerciseDataFromAPI to your MongoDB if needed
-      } catch (error) {
-        console.error(error);
+        await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $addToSet: { exercises: exercise._id } }
+        );
       }
-
-      return exercise;
+      throw new AuthenticationError('You need to be logged in!');
     },
+    removeExercise: async (parent, { exerciseId }, context) => {
+      if (context.user) {
+        const exercise = await Exercise.findOneAndDelete({
+          _id: exerciseId,
+          exerciseAuthor: context.user.username,
+        });
+
+        await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $pull: { exercises: exercise._id } }
+        );
+
+        return exercise;
+      }
+      throw new AuthenticationError('You need to be logged in!');
+    }
   },
 };
 

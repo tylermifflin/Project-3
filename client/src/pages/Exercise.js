@@ -1,106 +1,39 @@
-import React, { useState } from 'react';
-import { useMutation, gql } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/client';
+import { QUERY_EXERCISES } from '../utils/queries';
 
-const ADD_EXERCISE = gql`
-  mutation AddExercise(
-    $name: String!
-    $type: String!
-    $muscle: String!
-    $difficulty: String!
-  ) {
-    addExercise(
-      name: $name
-      type: $type
-      muscle: $muscle
-      difficulty: $difficulty
-    ) {
-      name
-      type
-      muscle
-      difficulty
-    }
-  }
-`;
 
 const ExerciseForm = () => {
-  const [exerciseData, setExerciseData] = useState({
-    name: '',
-    type: '',
-    muscle: '',
-    difficulty: '',
-  });
-
-  const [addExercise] = useMutation(ADD_EXERCISE);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setExerciseData((prevData) => ({ ...prevData, [name]: value }));
+    const [exerciseData, setExerciseData] = useState(null);
+  
+    const { loading, error, data } = useQuery(QUERY_EXERCISES, {
+      variables: exerciseData,
+    });
+  
+    useEffect(() => {
+      if (!loading && !error && data) {
+        setExerciseData(data.exercises);
+      }
+    }, [loading, error, data]);
+  
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error.message}</p>;
+  
+    return (
+      <div>
+        <h2>Exercise List</h2>
+        {exerciseData && exerciseData.map((exercise) => (
+          <div key={exercise.name}>
+            <p>Name: {exercise.name}</p>
+            <p>Type: {exercise.type}</p>
+            <p>Muscle: {exercise.muscle}</p>
+            <p>Difficulty: {exercise.difficulty}</p>
+            <p>Instructions: {exercise.instructions}</p>
+            <hr />
+          </div>
+        ))}
+      </div>
+    );
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await addExercise({
-        variables: {
-          ...exerciseData,
-        },
-      });
-      // Clear the form after successful submission
-      setExerciseData({
-        name: '',
-        type: '',
-        muscle: '',
-        difficulty: '',
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  return (
-    <div>
-      <h2>Exercise Form</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={exerciseData.name}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="type">Type:</label>
-          <input
-            type="text"
-            name="type"
-            value={exerciseData.type}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="muscle">Muscle:</label>
-          <input
-            type="text"
-            name="muscle"
-            value={exerciseData.muscle}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="difficulty">Difficulty:</label>
-          <input
-            type="text"
-            name="difficulty"
-            value={exerciseData.difficulty}
-            onChange={handleChange}
-          />
-        </div>
-        <button type="submit">Add Exercise</button>
-      </form>
-    </div>
-  );
-};
-
-export default ExerciseForm;
+  
+  export default ExerciseForm;

@@ -7,7 +7,7 @@ const typeDefs = gql`
     email: String
     password: String
     goals: [Goal]
-    Exercise: [Exercise]
+    exercises: [Exercise]
   }
 
   type Goal{
@@ -28,6 +28,7 @@ const typeDefs = gql`
     type: String
     muscle: String
     difficulty: String
+    instructions: String
   }
 
   type Auth {
@@ -40,7 +41,7 @@ const typeDefs = gql`
     user(username: String!): User
     goals(username: String): [Goal]
     goal(goalId: ID!): Goal
-    Exercise: [Exercise]
+    exercises: [Exercise]
     me: User
   }
 
