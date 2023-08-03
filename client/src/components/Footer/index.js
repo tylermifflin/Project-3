@@ -25,7 +25,7 @@ const Footer = () => {
           >
             ❤️
           </span>{' '}
-          By "Insert Name Here"
+          by the Tech Thoughts team.
         </h4>
       </div>
     </footer>

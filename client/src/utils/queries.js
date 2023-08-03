@@ -6,55 +6,59 @@ export const QUERY_USER = gql`
       _id
       username
       email
-      thoughts {
+      goals {
         _id
-        thoughtText
+        goalText
         createdAt
+        startDate
+        endDate
+      }
+      exercises {
+        name
+        type
+        muscle
+        difficulty
       }
     }
   }
 `;
 
-export const QUERY_THOUGHTS = gql`
-  query getThoughts {
-    thoughts {
+export const QUERY_GOALS = gql`
+  query getGoals($username: String) {
+    goals(username: $username) {
       _id
-      thoughtText
-      thoughtAuthor
+      goalText
       createdAt
+      startDate
+      endDate
     }
   }
 `;
 
-export const QUERY_SINGLE_THOUGHT = gql`
-  query getSingleThought($thoughtId: ID!) {
-    thought(thoughtId: $thoughtId) {
+export const QUERY_EXERCISES = gql`
+  query getExercises {
+    exercises {
+      name
+      type
+      muscle
+      difficulty
+    }
+  }
+`;
+
+export const QUERY_SINGLE_GOAL = gql`
+  query getSingleGoal($goalId: ID!) {
+    goal(goalId: $goalId) {
       _id
-      thoughtText
-      thoughtAuthor
+      goalText
       createdAt
-      comments {
-        _id
-        commentText
-        commentAuthor
-        createdAt
-      }
+      startDate
+      endDate
     }
   }
 `;
 
-export const QUERY_ME = gql`
-  query me {
-    me {
-      _id
-      username
-      email
-      thoughts {
-        _id
-        thoughtText
-        thoughtAuthor
-        createdAt
-      }
-    }
-  }
-`;
+
+
+
+

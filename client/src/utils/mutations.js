@@ -24,33 +24,50 @@ export const ADD_USER = gql`
   }
 `;
 
-export const ADD_THOUGHT = gql`
-  mutation addThought($thoughtText: String!) {
-    addThought(thoughtText: $thoughtText) {
+export const ADD_GOAL = gql`
+  mutation addGoal($goalText: String!) {
+    addGoal(goalText: $goalText) {
       _id
-      thoughtText
-      thoughtAuthor
+      goalText
       createdAt
-      comments {
-        _id
-        commentText
-      }
+      username
+      endDate
+      startDate
     }
   }
 `;
 
-export const ADD_COMMENT = gql`
-  mutation addComment($thoughtId: ID!, $commentText: String!) {
-    addComment(thoughtId: $thoughtId, commentText: $commentText) {
+export const REMOVE_GOAL = gql`
+  mutation removeGoal($goalId: ID!) {
+    removeGoal(goalId: $goalId) {
       _id
-      thoughtText
-      thoughtAuthor
+      goalText
       createdAt
-      comments {
-        _id
-        commentText
-        createdAt
-      }
+      username
+      endDate
+      startDate
+    }
+  }
+`;
+
+export const ADD_EXERCISE = gql`
+  mutation addExercise($name: String!, $type: String!, $muscle: String!, $difficulty: String!) {
+    addExercise(name: $name, type: $type, muscle: $muscle, difficulty: $difficulty) {
+      name
+      type
+      muscle
+      difficulty
+    }
+  }
+`;
+
+export const REMOVE_EXERCISE = gql`
+  mutation removeExercise($exerciseId: ID!) {
+    removeExercise(exerciseId: $exerciseId) {
+      name
+      type
+      muscle
+      difficulty
     }
   }
 `;
