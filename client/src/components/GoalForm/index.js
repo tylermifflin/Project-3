@@ -2,24 +2,24 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 
-import { ADD_THOUGHT } from '../../utils/mutations';
-import { QUERY_THOUGHTS, QUERY_ME } from '../../utils/queries';
+import { ADD_GOAL } from '../../utils/mutations';
+import { QUERY_GOALS, QUERY_ME} from '../../utils/queries';
 
 import Auth from '../../utils/auth';
 
-const ThoughtForm = () => {
-  const [thoughtText, setThoughtText] = useState('');
+const GoalForm = () => {
+  const [goalText, setGoalText] = useState('');
 
   const [characterCount, setCharacterCount] = useState(0);
 
-  const [addThought, { error }] = useMutation(ADD_THOUGHT, {
-    update(cache, { data: { addThought } }) {
+  const [addGoal, { error }] = useMutation(ADD_GOAL, {
+    update(cache, { data: { addGoal } }) {
       try {
-        const { thoughts } = cache.readQuery({ query: QUERY_THOUGHTS });
+        const { goals } = cache.readQuery({ query: QUERY_GOALS });
 
         cache.writeQuery({
-          query: QUERY_THOUGHTS,
-          data: { thoughts: [addThought, ...thoughts] },
+          query: QUERY_GOALS,
+          data: { goals: [addGoal, ...goals] },
         });
       } catch (e) {
         console.error(e);
@@ -29,7 +29,7 @@ const ThoughtForm = () => {
       const { me } = cache.readQuery({ query: QUERY_ME });
       cache.writeQuery({
         query: QUERY_ME,
-        data: { me: { ...me, thoughts: [...me.thoughts, addThought] } },
+        data: { me: { ...me, goals: [...me.goals, addGoal] } },
       });
     },
   });
@@ -38,14 +38,13 @@ const ThoughtForm = () => {
     event.preventDefault();
 
     try {
-      const { data } = await addThought({
+      const { data } = await addGoal({
         variables: {
-          thoughtText,
-          thoughtAuthor: Auth.getProfile().data.username,
+          goalText,
         },
       });
 
-      setThoughtText('');
+      setGoalText('');
     } catch (err) {
       console.error(err);
     }
@@ -54,8 +53,8 @@ const ThoughtForm = () => {
   const handleChange = (event) => {
     const { name, value } = event.target;
 
-    if (name === 'thoughtText' && value.length <= 280) {
-      setThoughtText(value);
+    if (name === 'goalText' && value.length <= 280) {
+      setGoalText(value);
       setCharacterCount(value.length);
     }
   };
@@ -81,7 +80,7 @@ const ThoughtForm = () => {
               <textarea
                 name="thoughtText"
                 placeholder="Here's a new thought..."
-                value={thoughtText}
+                value={goalText}
                 className="form-input w-100"
                 style={{ lineHeight: '1.5', resize: 'vertical' }}
                 onChange={handleChange}
@@ -90,7 +89,7 @@ const ThoughtForm = () => {
 
             <div className="col-12 col-lg-3">
               <button className="btn btn-primary btn-block py-3" type="submit">
-                Add Thought
+                Add Goal
               </button>
             </div>
             {error && (
@@ -110,4 +109,4 @@ const ThoughtForm = () => {
   );
 };
 
-export default ThoughtForm;
+export default GoalForm;

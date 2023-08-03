@@ -58,6 +58,29 @@ export const QUERY_SINGLE_GOAL = gql`
   }
 `;
 
+export const QUERY_ME = gql`
+  {
+    me {
+      _id
+      username
+      email
+      goals {
+        _id
+        goalText
+        createdAt
+        startDate
+        endDate
+      }
+      exercises {
+        name
+        type
+        muscle
+        difficulty
+      }
+    }
+  }
+`;
+
 
 
 

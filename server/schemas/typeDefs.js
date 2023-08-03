@@ -41,6 +41,7 @@ const typeDefs = gql`
     goals(username: String): [Goal]
     goal(goalId: ID!): Goal
     Exercise: [Exercise]
+    me: User
   }
 
   type Mutation {
